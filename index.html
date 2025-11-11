@@ -1,0 +1,628 @@
+import React, { useState } from 'react';
+import { Copy, Check } from 'lucide-react';
+
+export default function TradingViewURLGenerator() {
+  const [symbol, setSymbol] = useState('FOREXCOM:NSXUSD');
+  const [interval, setInterval] = useState('D');
+  const [timezone, setTimezone] = useState('Etc/UTC');
+  const [theme, setTheme] = useState('light');
+  const [locale, setLocale] = useState('kr');
+  const [style, setStyle] = useState('1');
+  const [copied, setCopied] = useState(false);
+  
+  // Additional options
+  const [showTopToolbar, setShowTopToolbar] = useState(true);
+  const [showBottomToolbar, setShowBottomToolbar] = useState(false);
+  const [showDrawingToolbar, setShowDrawingToolbar] = useState(false);
+  const [showSymbolDescription, setShowSymbolDescription] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showHotlists, setShowHotlists] = useState(false);
+  const [showVolume, setShowVolume] = useState(true);
+  const [allowSymbolChange, setAllowSymbolChange] = useState(true);
+  const [defaultDataRange, setDefaultDataRange] = useState(false);
+  const [getImageButton, setGetImageButton] = useState(true);
+  const [launchInPopup, setLaunchInPopup] = useState(false);
+  
+  // Size options
+  const [width, setWidth] = useState('100%');
+  const [height, setHeight] = useState('600');
+
+  const generateURL = () => {
+    const config = {
+      symbol: symbol,
+      interval: interval,
+      timezone: timezone,
+      theme: theme,
+      style: style,
+      locale: locale,
+      width: width,
+      height: height,
+      enable_publishing: getImageButton,
+      allow_symbol_change: allowSymbolChange,
+      hide_top_toolbar: !showTopToolbar,
+      hide_side_toolbar: !showDrawingToolbar,
+      toolbar_bg: theme === 'dark' ? '#1e222d' : '#f1f3f6',
+      details: showDetails,
+      hotlist: showHotlists,
+      calendar: false,
+      show_popup_button: launchInPopup,
+      support_host: "https://www.tradingview.com",
+      studies: showVolume ? ["Volume@tv-basicstudies"] : [],
+      showSymbolLogo: showSymbolDescription,
+      hide_legend: !showBottomToolbar,
+      withdateranges: defaultDataRange
+    };
+
+    const encodedConfig = encodeURIComponent(JSON.stringify(config));
+    return `https://s.tradingview.com/embed-widget/advanced-chart/?locale=${locale}#${encodedConfig}`;
+  };
+
+  const generatedURL = generateURL();
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedURL);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            TradingView 위젯 URL 생성기
+          </h1>
+          <p className="text-gray-600 mb-8">
+            노션에 바로 임베드할 수 있는 TradingView 차트 URL을 생성하세요
+          </p>
+
+          <div className="space-y-6">
+            {/* 심볼 선택 */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                심볼 (Symbol)
+              </label>
+              <select
+                value={symbol}
+                onChange={(e) => setSymbol(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <optgroup label="📊 지수 (Indices)">
+                  <option value="FOREXCOM:NSXUSD">나스닥 100 (NASDAQ 100)</option>
+                  <option value="FOREXCOM:SPXUSD">S&P 500</option>
+                  <option value="FOREXCOM:DJI">다우존스 (Dow Jones)</option>
+                  <option value="TVC:KOSPI">코스피 (KOSPI)</option>
+                  <option value="TVC:KOSDAQ">코스닥 (KOSDAQ)</option>
+                  <option value="TVC:NI225">닛케이 225 (Nikkei 225)</option>
+                  <option value="TVC:HSI">항셍 (Hang Seng)</option>
+                  <option value="EURONEXT:PX1">CAC 40</option>
+                  <option value="TVC:FTSE">FTSE 100</option>
+                  <option value="BMFBOVESPA:IBOV">보베스파 (Bovespa)</option>
+                </optgroup>
+                
+                <optgroup label="💻 미국 기술주 (US Tech Stocks)">
+                  <option value="NASDAQ:AAPL">Apple (AAPL)</option>
+                  <option value="NASDAQ:MSFT">Microsoft (MSFT)</option>
+                  <option value="NASDAQ:GOOGL">Alphabet/Google (GOOGL)</option>
+                  <option value="NASDAQ:AMZN">Amazon (AMZN)</option>
+                  <option value="NASDAQ:META">Meta/Facebook (META)</option>
+                  <option value="NASDAQ:NVDA">NVIDIA (NVDA)</option>
+                  <option value="NASDAQ:TSLA">Tesla (TSLA)</option>
+                  <option value="NASDAQ:AMD">AMD (AMD)</option>
+                  <option value="NASDAQ:NFLX">Netflix (NFLX)</option>
+                  <option value="NYSE:BABA">Alibaba (BABA)</option>
+                </optgroup>
+
+                <optgroup label="🏢 미국 주요 기업 (US Major Stocks)">
+                  <option value="NYSE:JPM">JP Morgan (JPM)</option>
+                  <option value="NYSE:BAC">Bank of America (BAC)</option>
+                  <option value="NYSE:WMT">Walmart (WMT)</option>
+                  <option value="NYSE:DIS">Disney (DIS)</option>
+                  <option value="NYSE:V">Visa (V)</option>
+                  <option value="NYSE:MA">Mastercard (MA)</option>
+                  <option value="NYSE:KO">Coca-Cola (KO)</option>
+                  <option value="NYSE:PFE">Pfizer (PFE)</option>
+                  <option value="NYSE:XOM">Exxon Mobil (XOM)</option>
+                  <option value="NASDAQ:INTC">Intel (INTC)</option>
+                </optgroup>
+
+                <optgroup label="🇰🇷 한국 주식 (Korean Stocks)">
+                  <option value="KRX:005930">삼성전자</option>
+                  <option value="KRX:000660">SK하이닉스</option>
+                  <option value="KRX:035420">NAVER</option>
+                  <option value="KRX:035720">카카오</option>
+                  <option value="KRX:005380">현대차</option>
+                  <option value="KRX:051910">LG화학</option>
+                  <option value="KRX:006400">삼성SDI</option>
+                  <option value="KRX:028260">삼성물산</option>
+                  <option value="KRX:068270">셀트리온</option>
+                  <option value="KRX:207940">삼성바이오로직스</option>
+                </optgroup>
+
+                <optgroup label="₿ 암호화폐 (Cryptocurrency)">
+                  <option value="BINANCE:BTCUSDT">Bitcoin (BTC/USDT)</option>
+                  <option value="BINANCE:ETHUSDT">Ethereum (ETH/USDT)</option>
+                  <option value="BINANCE:BNBUSDT">Binance Coin (BNB/USDT)</option>
+                  <option value="BINANCE:XRPUSDT">Ripple (XRP/USDT)</option>
+                  <option value="BINANCE:ADAUSDT">Cardano (ADA/USDT)</option>
+                  <option value="BINANCE:SOLUSDT">Solana (SOL/USDT)</option>
+                  <option value="BINANCE:DOGEUSDT">Dogecoin (DOGE/USDT)</option>
+                  <option value="BINANCE:DOTUSDT">Polkadot (DOT/USDT)</option>
+                  <option value="BINANCE:MATICUSDT">Polygon (MATIC/USDT)</option>
+                  <option value="BINANCE:AVAXUSDT">Avalanche (AVAX/USDT)</option>
+                </optgroup>
+
+                <optgroup label="💱 외환 (Forex)">
+                  <option value="FX:EURUSD">EUR/USD</option>
+                  <option value="FX:GBPUSD">GBP/USD</option>
+                  <option value="FX:USDJPY">USD/JPY</option>
+                  <option value="FX:USDKRW">USD/KRW</option>
+                  <option value="FX:EURKRW">EUR/KRW</option>
+                  <option value="FX:CNYKRW">CNY/KRW</option>
+                  <option value="FX:JPYKRW">JPY/KRW</option>
+                  <option value="FX:USDCNY">USD/CNY</option>
+                  <option value="FX:AUDUSD">AUD/USD</option>
+                  <option value="FX:NZDUSD">NZD/USD</option>
+                  <option value="FX:USDCAD">USD/CAD</option>
+                  <option value="FX:USDCHF">USD/CHF</option>
+                  <option value="FX:EURGBP">EUR/GBP</option>
+                </optgroup>
+
+                <optgroup label="🥇 원자재 (Commodities)">
+                  <option value="TVC:GOLD">금 (Gold)</option>
+                  <option value="TVC:SILVER">은 (Silver)</option>
+                  <option value="NYMEX:CL1!">원유 WTI (Crude Oil WTI)</option>
+                  <option value="NYMEX:NG1!">천연가스 (Natural Gas)</option>
+                  <option value="CBOT:ZC1!">옥수수 (Corn)</option>
+                  <option value="CBOT:ZW1!">밀 (Wheat)</option>
+                  <option value="COMEX:HG1!">구리 (Copper)</option>
+                  <option value="NYMEX:PL1!">백금 (Platinum)</option>
+                </optgroup>
+
+                <optgroup label="📈 ETF">
+                  <option value="AMEX:SPY">SPDR S&P 500 ETF (SPY)</option>
+                  <option value="NASDAQ:QQQ">Invesco QQQ Trust (QQQ)</option>
+                  <option value="AMEX:DIA">SPDR Dow Jones ETF (DIA)</option>
+                  <option value="AMEX:IWM">iShares Russell 2000 (IWM)</option>
+                  <option value="AMEX:GLD">SPDR Gold Shares (GLD)</option>
+                  <option value="AMEX:SLV">iShares Silver Trust (SLV)</option>
+                  <option value="NASDAQ:TQQQ">ProShares UltraPro QQQ (TQQQ)</option>
+                  <option value="AMEX:VTI">Vanguard Total Stock Market (VTI)</option>
+                </optgroup>
+
+                <optgroup label="✏️ 직접 입력 (Custom)">
+                  <option value="CUSTOM">직접 입력...</option>
+                </optgroup>
+              </select>
+              
+              {symbol === 'CUSTOM' && (
+                <input
+                  type="text"
+                  onChange={(e) => setSymbol(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-3"
+                  placeholder="예: NASDAQ:AAPL, BINANCE:BTCUSDT"
+                  autoFocus
+                />
+              )}
+              
+              <p className="text-sm text-gray-500 mt-1">
+                형식: EXCHANGE:TICKER (직접 입력을 원하시면 "직접 입력..." 선택)
+              </p>
+            </div>
+
+            {/* 인터벌 선택 */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                시간 간격 (Interval)
+              </label>
+              <select
+                value={interval}
+                onChange={(e) => setInterval(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="1">1분</option>
+                <option value="5">5분</option>
+                <option value="15">15분</option>
+                <option value="30">30분</option>
+                <option value="60">1시간</option>
+                <option value="240">4시간</option>
+                <option value="D">일봉</option>
+                <option value="W">주봉</option>
+                <option value="M">월봉</option>
+              </select>
+            </div>
+
+            {/* 차트 스타일 */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                차트 스타일
+              </label>
+              <select
+                value={style}
+                onChange={(e) => setStyle(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="1">캔들</option>
+                <option value="0">바</option>
+                <option value="9">선</option>
+                <option value="2">영역</option>
+                <option value="3">Heikin Ashi</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 테마 선택 */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  테마
+                </label>
+                <select
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="light">라이트</option>
+                  <option value="dark">다크</option>
+                </select>
+              </div>
+
+              {/* 언어 선택 */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  언어
+                </label>
+                <select
+                  value={locale}
+                  onChange={(e) => setLocale(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="kr">한국어</option>
+                  <option value="en">English</option>
+                  <option value="ja">日本語</option>
+                  <option value="zh">中文</option>
+                </select>
+              </div>
+            </div>
+
+            {/* 타임존 */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                타임존
+              </label>
+              <select
+                value={timezone}
+                onChange={(e) => setTimezone(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="Etc/UTC">UTC</option>
+                <option value="Asia/Seoul">서울</option>
+                <option value="America/New_York">뉴욕</option>
+                <option value="Europe/London">런던</option>
+                <option value="Asia/Tokyo">도쿄</option>
+                <option value="Asia/Shanghai">상하이</option>
+              </select>
+            </div>
+
+            {/* 차트 사이즈 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  너비 (Width)
+                </label>
+                <input
+                  type="text"
+                  value={width}
+                  onChange={(e) => setWidth(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="예: 100%, 800px"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  예: 100%, 800, 800px
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  높이 (Height)
+                </label>
+                <input
+                  type="text"
+                  value={height}
+                  onChange={(e) => setHeight(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="예: 600, 600px"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  예: 600, 800px
+                </p>
+              </div>
+            </div>
+
+            {/* Additional Options */}
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                추가 옵션 (Additional Options)
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Show top toolbar */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Show top toolbar</span>
+                  <button
+                    onClick={() => setShowTopToolbar(!showTopToolbar)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      showTopToolbar ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showTopToolbar ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Show bottom toolbar */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Show bottom toolbar</span>
+                  <button
+                    onClick={() => setShowBottomToolbar(!showBottomToolbar)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      showBottomToolbar ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showBottomToolbar ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Show drawing toolbar */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Show drawing toolbar</span>
+                  <button
+                    onClick={() => setShowDrawingToolbar(!showDrawingToolbar)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      showDrawingToolbar ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showDrawingToolbar ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Show symbol description */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Show symbol description</span>
+                  <button
+                    onClick={() => setShowSymbolDescription(!showSymbolDescription)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      showSymbolDescription ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showSymbolDescription ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Show details */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Show details</span>
+                  <button
+                    onClick={() => setShowDetails(!showDetails)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      showDetails ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showDetails ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Show hotlists */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Show hotlists</span>
+                  <button
+                    onClick={() => setShowHotlists(!showHotlists)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      showHotlists ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showHotlists ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Show volume */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Show volume</span>
+                  <button
+                    onClick={() => setShowVolume(!showVolume)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      showVolume ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showVolume ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Allow symbol change */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Allow symbol change</span>
+                  <button
+                    onClick={() => setAllowSymbolChange(!allowSymbolChange)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      allowSymbolChange ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        allowSymbolChange ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Default data range */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Default data range</span>
+                  <button
+                    onClick={() => setDefaultDataRange(!defaultDataRange)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      defaultDataRange ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        defaultDataRange ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Get image button */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">"Get image" button</span>
+                  <button
+                    onClick={() => setGetImageButton(!getImageButton)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      getImageButton ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        getImageButton ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Launch in popup button */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">"Launch in popup" button</span>
+                  <button
+                    onClick={() => setLaunchInPopup(!launchInPopup)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      launchInPopup ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        launchInPopup ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 생성된 URL */}
+          <div className="mt-8 p-6 bg-gray-50 rounded-lg border-2 border-gray-200">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                생성된 URL
+              </label>
+              <button
+                onClick={copyToClipboard}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                {copied ? (
+                  <>
+                    <Check size={18} />
+                    복사됨!
+                  </>
+                ) : (
+                  <>
+                    <Copy size={18} />
+                    복사
+                  </>
+                )}
+              </button>
+            </div>
+            <div className="bg-white p-4 rounded border border-gray-300 break-all text-sm font-mono text-gray-700">
+              {generatedURL}
+            </div>
+          </div>
+
+          {/* 사용 방법 */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h3 className="font-semibold text-blue-900 mb-2">📌 노션에서 사용하기</h3>
+            <ol className="text-sm text-blue-800 space-y-1 ml-4 list-decimal">
+              <li>위의 URL을 복사하세요</li>
+              <li>노션 페이지에서 <code className="bg-blue-100 px-1 rounded">/embed</code> 명령어를 입력하세요</li>
+              <li>복사한 URL을 붙여넣고 엔터를 누르세요</li>
+              <li>차트가 노션 페이지에 임베드됩니다!</li>
+            </ol>
+          </div>
+
+          {/* 일반적인 심볼 예시 */}
+          <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+            <h3 className="font-semibold text-green-900 mb-2">💡 자주 사용하는 심볼</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+              <button
+                onClick={() => setSymbol('FOREXCOM:NSXUSD')}
+                className="text-left px-3 py-2 bg-white rounded border border-green-200 hover:bg-green-100 transition-colors"
+              >
+                <div className="font-semibold text-green-900">나스닥 100</div>
+                <div className="text-green-700 text-xs">FOREXCOM:NSXUSD</div>
+              </button>
+              <button
+                onClick={() => setSymbol('FOREXCOM:SPXUSD')}
+                className="text-left px-3 py-2 bg-white rounded border border-green-200 hover:bg-green-100 transition-colors"
+              >
+                <div className="font-semibold text-green-900">S&P 500</div>
+                <div className="text-green-700 text-xs">FOREXCOM:SPXUSD</div>
+              </button>
+              <button
+                onClick={() => setSymbol('NASDAQ:AAPL')}
+                className="text-left px-3 py-2 bg-white rounded border border-green-200 hover:bg-green-100 transition-colors"
+              >
+                <div className="font-semibold text-green-900">Apple</div>
+                <div className="text-green-700 text-xs">NASDAQ:AAPL</div>
+              </button>
+              <button
+                onClick={() => setSymbol('BINANCE:BTCUSDT')}
+                className="text-left px-3 py-2 bg-white rounded border border-green-200 hover:bg-green-100 transition-colors"
+              >
+                <div className="font-semibold text-green-900">Bitcoin</div>
+                <div className="text-green-700 text-xs">BINANCE:BTCUSDT</div>
+              </button>
+              <button
+                onClick={() => setSymbol('BINANCE:ETHUSDT')}
+                className="text-left px-3 py-2 bg-white rounded border border-green-200 hover:bg-green-100 transition-colors"
+              >
+                <div className="font-semibold text-green-900">Ethereum</div>
+                <div className="text-green-700 text-xs">BINANCE:ETHUSDT</div>
+              </button>
+              <button
+                onClick={() => setSymbol('FX:USDJPY')}
+                className="text-left px-3 py-2 bg-white rounded border border-green-200 hover:bg-green-100 transition-colors"
+              >
+                <div className="font-semibold text-green-900">USD/JPY</div>
+                <div className="text-green-700 text-xs">FX:USDJPY</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
